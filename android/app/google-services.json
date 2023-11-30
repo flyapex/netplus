@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "805402273722",
+    "project_id": "netplus-4a802",
+    "storage_bucket": "netplus-4a802.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805402273722:android:ac7cb546a240b85dfd9f83",
+        "android_client_info": {
+          "package_name": "com.example.netplus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApmtYuY1qbIDRvPQNf2bohoYKtB20mFlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
