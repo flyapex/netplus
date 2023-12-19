@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/navcontroller.dart';
 import 'package:netplus/controller/usercontroller.dart';
+import 'home.dart';
 import 'widget/note.dart';
 
 class Offers extends StatefulWidget {
@@ -17,7 +17,7 @@ class Offers extends StatefulWidget {
 
 class _OffersState extends State<Offers> {
   final NavbarController navbarController = Get.find();
-  late Timer _timer;
+
   var simlist = [
     'assets/icons/gp.svg',
     'assets/icons/airtel.svg',
@@ -41,14 +41,10 @@ class _OffersState extends State<Offers> {
       }
     });
     super.initState();
-    _initializeTimer();
   }
-
-  void _initializeTimer() {}
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
   }
 
@@ -69,10 +65,11 @@ class _OffersState extends State<Offers> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.only(left: 20, right: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 20),
                         Note(
                           text:
                               '👀সিমে কোন লোন নেওয়া থাকলে অফার যাবে না লোনের টাকা কেটে যাবে!',
@@ -92,9 +89,9 @@ class _OffersState extends State<Offers> {
                     scrollDirection: Axis.vertical,
                     child: TabBar(
                       tabs: [
+                        Tab(child: Text('সাম্প্রতিক বিক্রি')),
                         Tab(child: Text('এলাকা ভিত্তিক')),
                         Tab(child: Text('ফেমিলি')),
-                        Tab(child: Text('সাম্প্রতিক বিক্রি')),
                       ],
                     ),
                   ),
@@ -114,26 +111,8 @@ class _OffersState extends State<Offers> {
                   return Post(status: Random().nextInt(3) + 0);
                 },
               ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                primary: false,
-                // controller: navbarController.scrollController,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Post(status: Random().nextInt(3) + 0);
-                },
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                primary: false,
-                // controller: navbarController.scrollController,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Post(status: Random().nextInt(3) + 0);
-                },
-              ),
+              const OfferList(operatorType: 1),
+              const OfferList(operatorType: 2),
             ],
           ),
         ),
@@ -222,7 +201,7 @@ class Post extends StatelessWidget {
 
     UserController userController = Get.find();
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: Container(
         height: 100,
         // margin: const EdgeInsets.only(top: 15),

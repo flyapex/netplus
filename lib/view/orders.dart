@@ -1,51 +1,100 @@
-import 'dart:math';
+// ignore_for_file: unnecessary_string_interpolations
 
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+import 'package:netplus/controller/postcontroller.dart';
+import 'package:netplus/model/model.dart';
 
 import '../controller/navcontroller.dart';
 import 'widget/note.dart';
 
-class Orders extends StatelessWidget {
+class Orders extends StatefulWidget {
   const Orders({super.key});
 
   @override
+  State<Orders> createState() => _OrdersState();
+}
+
+class _OrdersState extends State<Orders> {
+  NavbarController navbarController = Get.find();
+  PostController postController = Get.find();
+
+  @override
+  void initState() {
+    if (postController.fatchOneTimehistory.value) {
+      postController.getHistory();
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    NavbarController navbarController = Get.find();
-    return Scaffold(
-      body: SingleChildScrollView(
-        controller: navbarController.scrollControllerRecent,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              const Note(
-                text:
-                    '✅ অর্ডার করার ১০ মিনিট এর মধ্যে অর্ডার কন্ফার্ম হয়ে যাবে!, সাথে থাকার জন্য ধন্যবাদ🤝',
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                'History',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                ),
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                primary: false,
-                itemCount: 20,
-                itemBuilder: (context, index) {
-                  return Post(status: Random().nextInt(3) + 0);
-                },
-              ),
-            ],
+    return Obx(
+      () => Scaffold(
+        body: Scrollbar(
+          child: CustomRefreshIndicator(
+            key: postController.refreshkey,
+            durations: const RefreshIndicatorDurations(
+                completeDuration: Duration(milliseconds: 450)),
+            // ignore: deprecated_member_use
+            builder: MaterialIndicatorDelegate(
+              backgroundColor: Colors.blueAccent,
+              builder: (context, controller) {
+                return SizedBox(
+                  child: LottieBuilder.asset(
+                    'assets/lottie/ref.json',
+                  ),
+                );
+              },
+            ),
+            onRefresh: () async {
+              postController.historyList.clear();
+              postController.historyList.refresh();
+
+              postController.getHistory();
+              postController.historyList.sentToStream;
+            },
+            child: postController.historyLoding.value
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                    controller: navbarController.scrollControllerOrder,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          const Note(
+                            text:
+                                '✅ অর্ডার করার ১০ মিনিট এর মধ্যে অর্ডার কন্ফার্ম হয়ে যাবে!, সাথে থাকার জন্য ধন্যবাদ🤝',
+                          ),
+                          const SizedBox(height: 15),
+                          const Text(
+                            'History',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                          ),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: postController.historyList.length,
+                            itemBuilder: (context, index) {
+                              return Post(
+                                  data: postController.historyList[index]);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
         ),
       ),
@@ -54,16 +103,17 @@ class Orders extends StatelessWidget {
 }
 
 class Post extends StatelessWidget {
-  final int status;
+  final HistoryModel data;
   const Post({
     super.key,
-    required this.status,
+    required this.data,
   });
 
   @override
   Widget build(BuildContext context) {
+    PostController postController = Get.find();
     getStatus() {
-      if (status == 1) {
+      if (data.status == 0) {
         return Container(
           width: 60,
           height: 60,
@@ -99,14 +149,13 @@ class Post extends StatelessWidget {
       }
     }
 
-    var simlist = [
-      'assets/icons/gp.svg',
-      'assets/icons/airtel.svg',
-      'assets/icons/bl.svg',
-      'assets/icons/robi.svg',
-      'assets/icons/tt.svg',
-    ];
-    var number = simlist[Random().nextInt(4) + 0];
+    getStatusTxt() {
+      if (data.status == 0) {
+        return 'Panding';
+      } else {
+        return 'Done';
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.only(top: 20),
@@ -157,30 +206,34 @@ class Post extends StatelessWidget {
                                 // child: SvgPicture.asset(
                                 //   'assets/icons/gp.svg',
                                 // ),
-                                child: SvgPicture.asset(number),
+                                child: SvgPicture.asset(
+                                  postController
+                                      .getOperatorIcon(data.operatorType),
+                                ),
                               ),
                             ),
                           ),
                         ),
                         const VerticalDivider(color: Colors.transparent),
-                        const Expanded(
+                        Expanded(
                           flex: 3,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              VerticalDivider(color: Colors.transparent),
+                              const VerticalDivider(color: Colors.transparent),
                               Text(
-                                '২৫ জিবি ২০০ মিনিট',
-                                style: TextStyle(
+                                '${postController.numberToBangla(int.parse(data.gb))} জিবি ${postController.numberToBangla(int.parse(data.minute))} মিনিট',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.black87,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               Text.rich(
                                 TextSpan(
                                   children: [
-                                    TextSpan(
+                                    const TextSpan(
                                       text: '৳',
                                       style: TextStyle(
                                         height: 0.9,
@@ -190,8 +243,9 @@ class Post extends StatelessWidget {
                                       ),
                                     ),
                                     TextSpan(
-                                      text: '৫৩৯ ',
-                                      style: TextStyle(
+                                      text:
+                                          '${postController.numberToBangla(data.mainPrice)} ',
+                                      style: const TextStyle(
                                         height: 0.9,
                                         fontSize: 30,
                                         color: Color(0xffF0632E),
@@ -204,31 +258,31 @@ class Post extends StatelessWidget {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Feather.check_circle,
                                     size: 13,
                                     color: Colors.black54,
                                   ),
-                                  VerticalDivider(width: 4),
+                                  const VerticalDivider(width: 4),
                                   Text(
-                                    '৳৩৫২',
-                                    style: TextStyle(
+                                    '৳${postController.numberToBangla(data.discountPrice)}',
+                                    style: const TextStyle(
                                       fontSize: 15,
                                       color: Colors.black54,
                                       decoration: TextDecoration.lineThrough,
                                       decorationColor: Colors.black54,
                                     ),
                                   ),
-                                  VerticalDivider(width: 8),
-                                  Icon(
+                                  const VerticalDivider(width: 8),
+                                  const Icon(
                                     Feather.clock,
                                     size: 13,
                                     color: Colors.black54,
                                   ),
-                                  VerticalDivider(width: 4),
+                                  const VerticalDivider(width: 4),
                                   Text(
-                                    '৩০ দিন',
-                                    style: TextStyle(
+                                    '${postController.numberToBangla(data.duration)} দিন',
+                                    style: const TextStyle(
                                       fontSize: 15,
                                       color: Colors.black54,
                                     ),
@@ -249,9 +303,9 @@ class Post extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  const Text(
-                                    'সারা বাংলাদেশ ',
-                                    style: TextStyle(
+                                  Text(
+                                    '${data.offerLocation} ',
+                                    style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors.black38,
                                     ),
@@ -309,30 +363,35 @@ class Post extends StatelessWidget {
                                   child: SizedBox(
                                     width: 40,
                                     height: 40,
-                                    child: SvgPicture.asset(number),
+                                    child: SvgPicture.asset(
+                                      postController
+                                          .getOperatorIcon(data.operatorType),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                             const VerticalDivider(color: Colors.transparent),
-                            const Expanded(
+                            Expanded(
                               flex: 3,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  VerticalDivider(color: Colors.transparent),
+                                  const VerticalDivider(
+                                      color: Colors.transparent),
                                   Text(
-                                    '২৫ জিবি ২০০ মিনিট',
-                                    style: TextStyle(
+                                    '${postController.numberToBangla(int.parse(data.gb))} জিবি ${postController.numberToBangla(int.parse(data.minute))} মিনিট',
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.black87,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   Text.rich(
                                     TextSpan(
                                       children: [
-                                        TextSpan(
+                                        const TextSpan(
                                           text: '৳',
                                           style: TextStyle(
                                             height: 0.9,
@@ -342,8 +401,9 @@ class Post extends StatelessWidget {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: '৫৩৯ ',
-                                          style: TextStyle(
+                                          text:
+                                              '${postController.numberToBangla(data.mainPrice)} ',
+                                          style: const TextStyle(
                                             height: 0.9,
                                             fontSize: 30,
                                             color: Color(0xffF0632E),
@@ -357,15 +417,15 @@ class Post extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Feather.check_circle,
                                         size: 13,
                                         color: Colors.black54,
                                       ),
-                                      VerticalDivider(width: 4),
+                                      const VerticalDivider(width: 4),
                                       Text(
-                                        '৳৩৫২',
-                                        style: TextStyle(
+                                        '৳${postController.numberToBangla(data.discountPrice)}',
+                                        style: const TextStyle(
                                           fontSize: 15,
                                           color: Colors.black54,
                                           decoration:
@@ -373,16 +433,16 @@ class Post extends StatelessWidget {
                                           decorationColor: Colors.black54,
                                         ),
                                       ),
-                                      VerticalDivider(width: 8),
-                                      Icon(
+                                      const VerticalDivider(width: 8),
+                                      const Icon(
                                         Feather.clock,
                                         size: 13,
                                         color: Colors.black54,
                                       ),
-                                      VerticalDivider(width: 4),
+                                      const VerticalDivider(width: 4),
                                       Text(
-                                        '৩০ দিন',
-                                        style: TextStyle(
+                                        '${postController.numberToBangla(data.duration)} দিন',
+                                        style: const TextStyle(
                                           fontSize: 15,
                                           color: Colors.black54,
                                         ),
@@ -403,9 +463,9 @@ class Post extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      const Text(
-                                        'সারা বাংলাদেশ! ',
-                                        style: TextStyle(
+                                      Text(
+                                        '${data.offerLocation}',
+                                        style: const TextStyle(
                                           fontSize: 10,
                                           color: Colors.black38,
                                         ),
@@ -438,17 +498,17 @@ class Post extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Text(
-                              'Number : 01318728056',
+                              'Number : ${data.number}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black.withOpacity(0.7),
                                 decorationColor: Colors.black54,
                               ),
                             ),
-                            const Text(
+                            Text(
                               // '8:15 10/10/2022',
-                              'Status: Panding',
-                              style: TextStyle(
+                              'Status: ${getStatusTxt()}',
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
                               ),

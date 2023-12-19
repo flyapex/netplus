@@ -13,6 +13,7 @@ import 'package:netplus/view/orders.dart';
 import 'package:netplus/view/widget/drawer.dart';
 import 'controller/navcontroller.dart';
 import 'view/widget/appbar.dart';
+import 'view/widget/notification_helper.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -25,32 +26,38 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationHelper.initializeNotifications();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  // // FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  // //     alert: true, badge: true, sound: true);
+  FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, badge: true, sound: true);
   // // final fcmToken = await FirebaseMessaging.instance.getToken();
   final fcmToken = await messaging.getToken();
-  // NotificationSettings settings = await messaging.requestPermission(
-  //   alert: true,
-  //   announcement: false,
-  //   badge: true,
-  //   carPlay: false,
-  //   criticalAlert: false,
-  //   provisional: false,
-  //   sound: true,
-  // );
-  // print('User granted permission: ${settings.authorizationStatus}');
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  print('User granted permission: ${settings.authorizationStatus}');
+  await FirebaseMessaging.instance.subscribeToTopic('allUsers');
   // LocalNotificationService.initialize();
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');
     if (message.notification != null) {
       print('Notification Title: ${message.notification?.title}');
       print('Notification Body: ${message.notification?.body}');
-      // LocalNotificationService.display(message);
+      NotificationHelper.showNotification(
+        '${message.notification?.title}',
+        '${message.notification?.body}',
+      );
     }
   });
 
@@ -101,14 +108,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   var currentIndex = 1;
   final List<Widget> pageList = [
     const Offers(),
-    const Home(),
+    const HomeX(),
     const Orders(),
   ];
-  // List<IconModel> icons = [
-  //   const IconModel(icon: 'assets/icons/offers.svg', title: 'Offers'),
-  //   const IconModel(icon: 'assets/icons/home.svg', title: 'Home'),
-  //   const IconModel(icon: 'assets/icons/history.svg', title: 'Orders'),
-  // ];
 
   final GlobalKey<NestedScrollViewState> globalKey = GlobalKey();
   late final AnimationController _controller = AnimationController(
@@ -201,11 +203,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ),
         body: Center(
           child: PageView(
-            // child: pageList.elementAt(navbarController.selectedIndex),
             allowImplicitScrolling: true,
             scrollDirection: Axis.horizontal,
             controller: navbarController.pagecontroller,
-
             onPageChanged: (currentPage) {
               navbarController.currentIndex.value = currentPage;
             },
