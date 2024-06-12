@@ -98,13 +98,13 @@ class PostController extends GetxController {
   }
 
   newOrder(offerid) async {
-    bool response = await ApiService.newOrder(
-      userController.getUserID(),
-      offerid,
-      number.text,
-      'Khulna',
-    );
-
+    // bool response = await ApiService.newOrder(
+    //   userController.getUserID(),
+    //   offerid,
+    //   number.text,
+    //   'Khulna',
+    // );
+    bool response = true;
     // if (response) {}
     Get.dialog(
       Column(
@@ -128,6 +128,7 @@ class PostController extends GetxController {
                       Text(
                         response
                             ? 'আপনার অফার রিকোয়েস্টটি আমরা পেয়েছি!'
+                            // ignore: dead_code
                             : 'User not found',
                         textAlign: TextAlign.center,
                       ),
@@ -135,6 +136,7 @@ class PostController extends GetxController {
                       Text(
                         response
                             ? '১০ মিনিট আমাদের সাথে থাকার জন্য ধন্যবাদ🤝'
+                            // ignore: dead_code
                             : 'Contact Support 24/7',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -147,6 +149,7 @@ class PostController extends GetxController {
                           child: Lottie.asset(
                             response
                                 ? 'assets/lottie/done.json'
+                                // ignore: dead_code
                                 : 'assets/lottie/404.json',
                             repeat: false,
                           ),
@@ -161,6 +164,7 @@ class PostController extends GetxController {
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: const Color(0xFFFFFFFF),
                                 backgroundColor:
+                                    // ignore: dead_code
                                     response ? Colors.amber : Colors.red,
                                 minimumSize: const Size(0, 45),
                                 shape: RoundedRectangleBorder(
@@ -172,12 +176,13 @@ class PostController extends GetxController {
                                   Get.back();
                                   // navbarController.selectedIndex = 2;
                                   // navbarController.pagecontroller.jumpToPage(2);
+                                  // ignore: dead_code
                                 } else {
-                                  Get.back();
                                   //fb page
                                 }
                               },
                               child: Text(
+                                // ignore: dead_code
                                 response ? 'Okay' : 'Okay🤝',
                               ),
                             ),

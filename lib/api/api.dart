@@ -1,11 +1,11 @@
 import 'dart:convert';
-
+// https://picsum.photos/200
 import 'package:dio/dio.dart';
 // import 'package:http/http.dart' as http;
 import 'package:netplus/model/model.dart';
 
-var baseUrl = 'http://109.123.234.150:4600/api';
-// var baseUrl = 'http://10.0.2.2:3000/api';
+// var baseUrl = 'http://109.123.234.150:4600/api';
+var baseUrl = 'http://10.0.2.2:3000/api';
 
 final dio = Dio();
 
@@ -17,6 +17,7 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
+      // print(jsonEncode(response.data));
       return offerModelFromJson(jsonEncode(response.data));
     } else {
       return null;
@@ -28,6 +29,9 @@ class ApiService {
       "$baseUrl/offer",
       queryParameters: {"operatorType": operatorType},
     );
+
+    print('$baseUrl/offer');
+    print({"operatorType": operatorType});
 
     if (response.statusCode == 200) {
       return offerModelFromJson(jsonEncode(response.data));
@@ -66,6 +70,7 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
+      // print(jsonEncode(response.data));
       return historyModelFromJson(jsonEncode(response.data));
     } else {
       return null;

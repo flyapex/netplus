@@ -43,58 +43,59 @@ class ReusableAppBar {
                   backgroundImage: NetworkImage(userController.image.value),
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              const Column(
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(),
-                  const Text('Galib'),
+                  // SizedBox(),
+                  Text('Galib', style: TextStyle(fontSize: 18)),
                   // Text('  ${userController.name.value}'),
-                  Center(
-                    child: Container(
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff33484D),
-                        // color: const Color(0xff213040),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          // navbarController.selectedIndex = 3;
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 10),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xff46B962),
-                                  // color: const Color(0xff46B962),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: Icon(
-                                  FontAwesome.plus,
-                                  color: Colors.white.withOpacity(0.7),
-                                  size: 14,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              const Text(
-                                '100 ৳',
-                                // '${userController.deposit.value} \$',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xffe8e8ea),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Center(
+                  //   child: Container(
+                  //     height: 28,
+                  //     decoration: BoxDecoration(
+                  //       color: const Color(0xff33484D),
+                  //       // color: const Color(0xff213040),
+                  //       borderRadius: BorderRadius.circular(100),
+                  //     ),
+                  //     child: InkWell(
+                  //       onTap: () {
+                  //         // navbarController.selectedIndex = 3;
+                  //       },
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.only(left: 4, right: 10),
+                  //         child: Row(
+                  //           children: [
+                  //             Container(
+                  //               padding: const EdgeInsets.all(4),
+                  //               decoration: BoxDecoration(
+                  //                 color: const Color(0xff46B962),
+                  //                 // color: const Color(0xff46B962),
+                  //                 borderRadius: BorderRadius.circular(100),
+                  //               ),
+                  //               child: Icon(
+                  //                 FontAwesome.plus,
+                  //                 color: Colors.white.withOpacity(0.7),
+                  //                 size: 14,
+                  //               ),
+                  //             ),
+                  //             const SizedBox(width: 5),
+                  //             const Text(
+                  //               '100 ৳',
+                  //               // '${userController.deposit.value} \$',
+                  //               style: TextStyle(
+                  //                 fontSize: 12,
+                  //                 color: Color(0xffe8e8ea),
+                  //                 fontWeight: FontWeight.bold,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ],

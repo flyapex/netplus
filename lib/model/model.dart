@@ -45,14 +45,14 @@ String offerModelToJson(List<OfferModel> data) =>
 class OfferModel {
   int offerId;
   int operatorType;
-  String gb;
-  String minute;
+  int gb;
+  int minute;
   int mainPrice;
   int discountPrice;
   int duration;
   String location;
   int click;
-  int offerType;
+  String offerType;
   DateTime time;
 
   OfferModel({
@@ -97,6 +97,7 @@ class OfferModel {
         "time": time.toIso8601String(),
       };
 }
+
 // To parse this JSON data, do
 //
 //     final historyModel = historyModelFromJson(jsonString);
@@ -112,13 +113,13 @@ class HistoryModel {
   final int uid;
   final int offerId;
   final int operatorType;
-  final String gb;
-  final String minute;
+  final int gb;
+  final int minute;
   final int mainPrice;
   final int discountPrice;
   final int duration;
   final String offerLocation;
-  final int offerType;
+  final String offerType;
   final String number;
   final String currentLocation;
   final int status;

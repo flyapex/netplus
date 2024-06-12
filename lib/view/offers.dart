@@ -58,7 +58,7 @@ class _OffersState extends State<Offers> {
       body: DefaultTabController(
         length: 3,
         child: NestedScrollView(
-          controller: navbarController.scrollControllerRecent,
+          controller: navbarController.scrollControllerOffer,
           scrollDirection: Axis.vertical,
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             const SliverToBoxAdapter(
@@ -89,9 +89,9 @@ class _OffersState extends State<Offers> {
                     scrollDirection: Axis.vertical,
                     child: TabBar(
                       tabs: [
-                        Tab(child: Text('সাম্প্রতিক বিক্রি')),
                         Tab(child: Text('এলাকা ভিত্তিক')),
                         Tab(child: Text('ফেমিলি')),
+                        Tab(child: Text('সাম্প্রতিক বিক্রি')),
                       ],
                     ),
                   ),
@@ -106,7 +106,7 @@ class _OffersState extends State<Offers> {
                 shrinkWrap: true,
                 primary: false,
                 // controller: navbarController.scrollController,
-                itemCount: 10,
+                itemCount: 20,
                 itemBuilder: (context, index) {
                   return Post(status: Random().nextInt(3) + 0);
                 },
@@ -199,7 +199,7 @@ class Post extends StatelessWidget {
       }
     }
 
-    UserController userController = Get.find();
+    // UserController userController = Get.put(UserController());
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: Container(
@@ -233,14 +233,20 @@ class Post extends StatelessWidget {
                       color: Colors.blue.withOpacity(0.09),
                     ),
                   ),
-                  child: Center(
-                    child: SizedBox(
-                      child: Image(
-                        image: NetworkImage(
-                          userController.image.value,
-                        ),
-                      ),
-                    ),
+                  // child: Center(
+                  //   child: SizedBox(
+                  //     child: Image(
+                  //       image: NetworkImage(
+                  //         userController.image.value,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  child: const CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: NetworkImage(
+                        'https://fastly.picsum.photos/id/256/200/200.jpg?hmac=MX3r8Dktr5b26lQqb5JB6sgLnCxSgt1KRm0F1eNDHCk'),
                   ),
                 ),
               ),

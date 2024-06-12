@@ -1,70 +1,70 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/usercontroller.dart';
-import 'package:netplus/firebase_options.dart';
 import 'package:netplus/view/home.dart';
 import 'package:netplus/view/offers.dart';
 import 'package:netplus/view/orders.dart';
 import 'package:netplus/view/widget/drawer.dart';
+import 'package:netplus/view/widget/notification_helper.dart';
+import 'controller/db_controller.dart';
 import 'controller/navcontroller.dart';
+import 'view/login.dart';
 import 'view/widget/appbar.dart';
-import 'view/widget/notification_helper.dart';
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+// @pragma('vm:entry-point')
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
 
-  print("Handling a background message: ${message.notification?.title}");
-  print("Handling a background message: ${message.notification?.body}");
-  print("Handling a background message: ${message.data}");
-}
+//   print("Handling a background message: ${message.notification?.title}");
+//   print("Handling a background message: ${message.notification?.body}");
+//   print("Handling a background message: ${message.data}");
+// }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await NotificationHelper.initializeNotifications();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await NotificationHelper.initializeNotifications();
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true, badge: true, sound: true);
-  // // final fcmToken = await FirebaseMessaging.instance.getToken();
-  final fcmToken = await messaging.getToken();
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //     alert: true, badge: true, sound: true);
+  // // // final fcmToken = await FirebaseMessaging.instance.getToken();
+  // final fcmToken = await messaging.getToken();
 
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-  print('User granted permission: ${settings.authorizationStatus}');
-  await FirebaseMessaging.instance.subscribeToTopic('allUsers');
-  // LocalNotificationService.initialize();
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Got a message whilst in the foreground!');
-    if (message.notification != null) {
-      print('Notification Title: ${message.notification?.title}');
-      print('Notification Body: ${message.notification?.body}');
-      NotificationHelper.showNotification(
-        '${message.notification?.title}',
-        '${message.notification?.body}',
-      );
-    }
-  });
+  // NotificationSettings settings = await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
+  // print('User granted permission: ${settings.authorizationStatus}');
+  // await FirebaseMessaging.instance.subscribeToTopic('allUsers');
+  // // LocalNotificationService.initialize();
+  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //   print('Got a message whilst in the foreground!');
+  //   if (message.notification != null) {
+  //     print('Notification Title: ${message.notification?.title}');
+  //     print('Notification Body: ${message.notification?.body}');
+  //     NotificationHelper.showNotification(
+  //       '${message.notification?.title}',
+  //       '${message.notification?.body}',
+  //     );
+  //   }
+  // });
 
-  print('--------------------------');
-  print(fcmToken);
+  // print('--------------------------');
+  // print(fcmToken);
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   runApp(const MyApp());
 }
 
@@ -81,15 +81,18 @@ class MyApp extends StatelessWidget {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
+    final dbController = Get.put(DBController());
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Net Plus',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
-      home: const HomeView(),
+      home: dbController.getUserID() == false
+          ? const LoginPage()
+          : const HomeView(),
     );
   }
 }
@@ -130,9 +133,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       curve: Curves.easeIn,
     ),
   );
+  getNofi() async {
+    print('--------------------------------------------------');
+    await FirebaseMessagingService.initializeFirebaseMessaging();
+  }
 
   @override
   void initState() {
+    getNofi();
     navbarController.scrollControllerHome.addListener(
       () {
         if (navbarController.scrollControllerHome.position.pixels > 0) {}
@@ -148,16 +156,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         }
       },
     );
-    navbarController.scrollControllerRecent.addListener(
+    navbarController.scrollControllerOffer.addListener(
       () {
-        if (navbarController.scrollControllerRecent.position.pixels > 0) {}
+        if (navbarController.scrollControllerOffer.position.pixels > 0) {}
         if (navbarController
-                .scrollControllerRecent.position.userScrollDirection ==
+                .scrollControllerOffer.position.userScrollDirection ==
             ScrollDirection.reverse) {
           if (_offsetAnimation.isCompleted) _controller.reverse();
         }
         if (navbarController
-                .scrollControllerRecent.position.userScrollDirection ==
+                .scrollControllerOffer.position.userScrollDirection ==
             ScrollDirection.forward) {
           _controller.forward();
         }

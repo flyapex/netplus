@@ -7,7 +7,7 @@ class NavbarController extends GetxController {
   var currentIndex = 1.obs;
   get selectedIndex => currentIndex.value;
   set selectedIndex(index) => currentIndex.value = index;
-  ScrollController scrollControllerRecent = ScrollController();
+  ScrollController scrollControllerOffer = ScrollController();
   ScrollController scrollControllerHome = ScrollController();
   ScrollController scrollControllerOrder = ScrollController();
   PageController pagecontroller = PageController(initialPage: 1);

@@ -1,14 +1,13 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/navcontroller.dart';
 import 'package:netplus/controller/postcontroller.dart';
-
+import 'package:netplus/data/offer.dart';
 import '../controller/usercontroller.dart';
-import 'orderpage.dart';
+import 'neworder.dart';
 import 'widget/imageslider.dart';
 import 'widget/note.dart';
 
@@ -61,12 +60,12 @@ class _HomeXState extends State<HomeX> {
           _countdownDuration = _countdownDuration - const Duration(seconds: 1);
         }
       });
-      if (_countdownDuration.inSeconds <= 0) {
-        _timer.cancel();
-        print('Countdown reached 0');
-      } else {
-        _countdownDuration = _countdownDuration - const Duration(seconds: 1);
-      }
+      // if (_countdownDuration.inSeconds <= 0) {
+      //   _timer.cancel();
+      //   print('Countdown reached 0');
+      // } else {
+      //   _countdownDuration = _countdownDuration - const Duration(seconds: 1);
+      // }
     });
   }
 
@@ -116,7 +115,7 @@ class _HomeXState extends State<HomeX> {
       //   },
       // ),
       body: DefaultTabController(
-        length: 5,
+        length: 4,
         child: NestedScrollView(
           controller: navbarController.scrollControllerHome,
           scrollDirection: Axis.vertical,
@@ -255,7 +254,7 @@ class _HomeXState extends State<HomeX> {
                       Tab(child: Text('Robi')),
                       Tab(child: Text('Airtel')),
                       Tab(child: Text('BL')),
-                      Tab(child: Text('Tele')),
+                      // Tab(child: Text('Tele')),
                     ],
                   ),
                 ],
@@ -268,7 +267,7 @@ class _HomeXState extends State<HomeX> {
               OfferList(operatorType: 2),
               OfferList(operatorType: 3),
               OfferList(operatorType: 4),
-              OfferList(operatorType: 5),
+              // OfferList(operatorType: 5),
             ],
           ),
         ),
@@ -277,221 +276,263 @@ class _HomeXState extends State<HomeX> {
   }
 }
 
-class OfferList extends StatelessWidget {
+class OfferList extends StatefulWidget {
   final int operatorType;
   const OfferList({super.key, required this.operatorType});
 
   @override
-  Widget build(BuildContext context) {
-    PostController postController = Get.find();
-    if (postController.offerLists[operatorType]!.isEmpty) {
-      postController.getOffer(operatorType);
-    }
+  State<OfferList> createState() => _OfferListState();
+}
 
-    return Obx(
-      () => postController.offerLists[operatorType]!.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              primary: false,
-              itemCount: postController.offerLists[operatorType]?.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: InkWell(
-                    onTap: () {
-                      Get.bottomSheet(
-                        Order(
-                          data: postController.offerLists[operatorType]?[index],
-                        ),
-                        elevation: 20.0,
-                        enableDrag: true,
-                        backgroundColor: Colors.white,
-                        isScrollControlled: true,
-                        ignoreSafeArea: true,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20.0),
-                            topRight: Radius.circular(20.0),
-                          ),
-                        ),
-                        enterBottomSheetDuration:
-                            const Duration(milliseconds: 170),
-                      );
-                    },
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.black12,
-                          width: 1,
-                        ),
-                        // boxShadow: const [
-                        //   BoxShadow(color: Colors.black12, spreadRadius: 1.1),
-                        // ],
+class _OfferListState extends State<OfferList> {
+  PostController postController = Get.find();
+  // if (postController.offerLists[operatorType]!.isEmpty) {
+  //   postController.getOffer(operatorType);
+  // }
+
+  //  0: '০',
+  //     1: '১',
+  //     2: '২',
+  //     3: '৩',
+  //     4: '৪',
+  //     5: '৫',
+  //     6: '৬',
+  //     7: '৭',
+  //     8: '৮',
+  //     9: '৯',
+  final items = [
+    "৭ দিন",
+    "১৫ দিন",
+    "৩০ দিন",
+    "Unlimited দিন",
+  ];
+  List<String> selectedItem = [];
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: items
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.only(top: 20, left: 10),
+                      child: FilterChip(
+                        label: Text(e),
+                        selected: selectedItem.contains(e),
+                        onSelected: (bool value) {
+                          if (selectedItem.contains(e)) {
+                            selectedItem.remove(e);
+                          } else {
+                            selectedItem.add(e);
+                          }
+                          setState(() {});
+                        },
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 0, right: 13),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                height: 70,
-                                width: 70,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.blue.withOpacity(0.09),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xffEC008C)
-                                        .withOpacity(0.09),
-                                  ),
+                    ),
+                  )
+                  .toList(),
+            ).paddingOnly(left: 10),
+          ),
+          ListView.builder(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            primary: false,
+            itemCount: 20,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: InkWell(
+                  onTap: () {
+                    Get.bottomSheet(
+                      const Order(),
+                      elevation: 20.0,
+                      enableDrag: true,
+                      backgroundColor: Colors.white,
+                      isScrollControlled: true,
+                      ignoreSafeArea: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
+                        ),
+                      ),
+                      enterBottomSheetDuration:
+                          const Duration(milliseconds: 170),
+                    );
+                  },
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.black12,
+                        width: 1,
+                      ),
+                      // boxShadow: const [
+                      //   BoxShadow(color: Colors.black12, spreadRadius: 1.1),
+                      // ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 13),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue.withOpacity(0.09),
+                                border: Border.all(
+                                  width: 1,
+                                  color:
+                                      const Color(0xffEC008C).withOpacity(0.09),
                                 ),
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                    child: SvgPicture.asset(
-                                      postController
-                                          .getOperatorIcon(operatorType),
-                                    ),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: SvgPicture.asset(
+                                    postController
+                                        .getOperatorIcon(widget.operatorType),
                                   ),
                                 ),
                               ),
                             ),
-                            const VerticalDivider(color: Colors.transparent),
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const VerticalDivider(
-                                      color: Colors.transparent),
-                                  Text(
-                                    '${postController.numberToBangla(int.parse(postController.offerLists[operatorType]?[index].gb))} জিবি ${postController.numberToBangla(int.parse(postController.offerLists[operatorType]?[index].minute))} মিনিট',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black87,
-                                    ),
-                                    // maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                          ),
+                          const VerticalDivider(color: Colors.transparent),
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const VerticalDivider(
+                                    color: Colors.transparent),
+                                Text(
+                                  '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
                                   ),
-                                  Text.rich(
-                                    TextSpan(
-                                      children: [
-                                        const TextSpan(
-                                          text: '৳',
-                                          style: TextStyle(
-                                            height: 0.9,
-                                            fontSize: 25,
-                                            color: Color(0xffF0632E),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '${postController.numberToBangla(postController.offerLists[operatorType]?[index].mainPrice)} ',
-                                          style: const TextStyle(
-                                            height: 0.9,
-                                            fontSize: 30,
-                                            color: Color(0xffF0632E),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                  // maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text.rich(
+                                  TextSpan(
                                     children: [
-                                      const Icon(
-                                        Feather.check_circle,
-                                        size: 13,
-                                        color: Colors.black54,
-                                      ),
-                                      const VerticalDivider(width: 4),
-                                      Text(
-                                        '৳${postController.numberToBangla(postController.offerLists[operatorType]?[index].discountPrice)}',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black54,
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          decorationColor: Colors.black54,
+                                      const TextSpan(
+                                        text: '৳',
+                                        style: TextStyle(
+                                          height: 0.9,
+                                          fontSize: 25,
+                                          color: Color(0xffF0632E),
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const VerticalDivider(width: 8),
-                                      const Icon(
-                                        Feather.clock,
-                                        size: 13,
-                                        color: Colors.black54,
-                                      ),
-                                      const VerticalDivider(width: 4),
-                                      Text(
-                                        '${postController.numberToBangla(postController.offerLists[operatorType]?[index].duration)} দিন',
+                                      TextSpan(
+                                        text:
+                                            '${postController.numberToBangla(mainPrice)} ',
                                         style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black54,
+                                          height: 0.9,
+                                          fontSize: 30,
+                                          color: Color(0xffF0632E),
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Container(
-                                    height: 35,
-                                    width: Get.width / 3.2,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffFFAB1C),
-                                      borderRadius: BorderRadius.circular(1000),
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Feather.check_circle,
+                                      size: 13,
+                                      color: Colors.black54,
                                     ),
-                                    child: const Center(
-                                      child: Text(
-                                        'Buy Now',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                    const VerticalDivider(width: 4),
+                                    Text(
+                                      '৳${postController.numberToBangla(discountPrice)}',
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black54,
+                                        decoration: TextDecoration.lineThrough,
+                                        decorationColor: Colors.black54,
                                       ),
                                     ),
+                                    const VerticalDivider(width: 8),
+                                    const Icon(
+                                      Feather.clock,
+                                      size: 13,
+                                      color: Colors.black54,
+                                    ),
+                                    const VerticalDivider(width: 4),
+                                    Text(
+                                      '${postController.numberToBangla(duration)} দিন',
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  height: 35,
+                                  width: Get.width / 3.2,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffFFAB1C),
+                                    borderRadius: BorderRadius.circular(1000),
                                   ),
-                                  const Align(
-                                    alignment: Alignment.bottomRight,
+                                  child: const Center(
                                     child: Text(
-                                      'সারা বাংলাদেশ ',
+                                      'Buy Now',
                                       style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.black38,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Text(
+                                    'সারা বাংলাদেশ ',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black38,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

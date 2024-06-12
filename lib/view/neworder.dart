@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/postcontroller.dart';
-import 'package:netplus/model/model.dart';
-
+import 'package:netplus/data/offer.dart';
 import 'widget/textinput.dart';
 
 class Order extends StatefulWidget {
-  final OfferModel data;
-  const Order({super.key, required this.data});
+  const Order({super.key});
 
   @override
   State<Order> createState() => _OrderState();
@@ -41,10 +39,8 @@ class _OrderState extends State<Order> {
             ),
           ),
           const SizedBox(height: 20),
-          Expanded(
-            child: OrderPage(
-              data: widget.data,
-            ),
+          const Expanded(
+            child: OrderPage(),
           ),
         ],
       ),
@@ -53,8 +49,10 @@ class _OrderState extends State<Order> {
 }
 
 class OrderPage extends StatelessWidget {
-  final OfferModel data;
-  const OrderPage({super.key, required this.data});
+  // final OfferModel
+  const OrderPage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +92,7 @@ class OrderPage extends StatelessWidget {
                           width: 40,
                           height: 40,
                           child: SvgPicture.asset(
-                            postController.getOperatorIcon(data.operatorType),
+                            postController.getOperatorIcon(1),
                           ),
                         ),
                       ),
@@ -104,7 +102,7 @@ class OrderPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${postController.numberToBangla(int.parse(data.gb))} জিবি ${postController.numberToBangla(int.parse(data.minute))} মিনিট',
+                          '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
                           style: const TextStyle(
                             fontSize: 18,
                             color: Color(0xffF0632E),
@@ -115,7 +113,7 @@ class OrderPage extends StatelessWidget {
                             children: [
                               TextSpan(
                                 text:
-                                    '${postController.numberToBangla(data.mainPrice)} ',
+                                    '${postController.numberToBangla(mainPrice)} ',
                                 style: const TextStyle(
                                   height: 0.9,
                                   fontSize: 30,
@@ -136,7 +134,7 @@ class OrderPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '৳${postController.numberToBangla(data.discountPrice)}',
+                          '৳${postController.numberToBangla(discountPrice)}',
                           style: const TextStyle(
                             fontSize: 15,
                             color: Colors.black54,
@@ -195,7 +193,7 @@ class OrderPage extends StatelessWidget {
                     child: FloatingActionButton.extended(
                       onPressed: () async {
                         Get.back();
-                        await postController.newOrder(data.offerId);
+                        await postController.newOrder(offerId);
                       },
                       label: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

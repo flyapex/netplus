@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_string_interpolations
-
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +6,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:netplus/controller/postcontroller.dart';
-import 'package:netplus/model/model.dart';
-
+import 'package:netplus/data/offer.dart';
 import '../controller/navcontroller.dart';
 import 'widget/note.dart';
 
@@ -26,75 +23,70 @@ class _OrdersState extends State<Orders> {
 
   @override
   void initState() {
-    if (postController.fatchOneTimehistory.value) {
-      postController.getHistory();
-    }
+    // if (postController.fatchOneTimehistory.value) {
+    //   postController.getHistory();
+    // }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
-        body: Scrollbar(
-          child: CustomRefreshIndicator(
-            key: postController.refreshkey,
-            durations: const RefreshIndicatorDurations(
-                completeDuration: Duration(milliseconds: 450)),
-            // ignore: deprecated_member_use
-            builder: MaterialIndicatorDelegate(
-              backgroundColor: Colors.blueAccent,
-              builder: (context, controller) {
-                return SizedBox(
-                  child: LottieBuilder.asset(
-                    'assets/lottie/ref.json',
-                  ),
-                );
-              },
-            ),
-            onRefresh: () async {
-              postController.historyList.clear();
-              postController.historyList.refresh();
-
-              postController.getHistory();
-              postController.historyList.sentToStream;
+    return Scaffold(
+      body: Scrollbar(
+        child: CustomRefreshIndicator(
+          key: postController.refreshkey,
+          durations: const RefreshIndicatorDurations(
+              completeDuration: Duration(milliseconds: 450)),
+          // ignore: deprecated_member_use
+          builder: MaterialIndicatorDelegate(
+            backgroundColor: Colors.blueAccent,
+            builder: (context, controller) {
+              return SizedBox(
+                child: LottieBuilder.asset(
+                  'assets/lottie/ref.json',
+                ),
+              );
             },
-            child: postController.historyLoding.value
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    controller: navbarController.scrollControllerOrder,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 20),
-                          const Note(
-                            text:
-                                '✅ অর্ডার করার ১০ মিনিট এর মধ্যে অর্ডার কন্ফার্ম হয়ে যাবে!, সাথে থাকার জন্য ধন্যবাদ🤝',
-                          ),
-                          const SizedBox(height: 15),
-                          const Text(
-                            'History',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                            ),
-                          ),
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: postController.historyList.length,
-                            itemBuilder: (context, index) {
-                              return Post(
-                                  data: postController.historyList[index]);
-                            },
-                          ),
-                        ],
-                      ),
+          ),
+          onRefresh: () async {
+            // postController.historyList.clear();
+            // postController.historyList.refresh();
+
+            // postController.getHistory();
+            // postController.historyList.sentToStream;
+          },
+          child: SingleChildScrollView(
+            controller: navbarController.scrollControllerOrder,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  const Note(
+                    text:
+                        '✅ অর্ডার করার ১০ মিনিট এর মধ্যে অর্ডার কন্ফার্ম হয়ে যাবে!, সাথে থাকার জন্য ধন্যবাদ🤝',
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    'History',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black,
                     ),
                   ),
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: 50,
+                    itemBuilder: (context, index) {
+                      return const Post();
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -103,17 +95,23 @@ class _OrdersState extends State<Orders> {
 }
 
 class Post extends StatelessWidget {
-  final HistoryModel data;
+  // final HistoryModel data;
   const Post({
     super.key,
-    required this.data,
+    // required this.data,
   });
 
   @override
   Widget build(BuildContext context) {
     PostController postController = Get.find();
+    // var max = 1;
+    // var min = 0;
+    // Random rnd = Random();
+
+    var r = 2;
+
     getStatus() {
-      if (data.status == 0) {
+      if (r == 0) {
         return Container(
           width: 60,
           height: 60,
@@ -150,7 +148,7 @@ class Post extends StatelessWidget {
     }
 
     getStatusTxt() {
-      if (data.status == 0) {
+      if (r == 0) {
         return 'Panding';
       } else {
         return 'Done';
@@ -207,8 +205,7 @@ class Post extends StatelessWidget {
                                 //   'assets/icons/gp.svg',
                                 // ),
                                 child: SvgPicture.asset(
-                                  postController
-                                      .getOperatorIcon(data.operatorType),
+                                  postController.getOperatorIcon(r),
                                 ),
                               ),
                             ),
@@ -223,7 +220,7 @@ class Post extends StatelessWidget {
                             children: [
                               const VerticalDivider(color: Colors.transparent),
                               Text(
-                                '${postController.numberToBangla(int.parse(data.gb))} জিবি ${postController.numberToBangla(int.parse(data.minute))} মিনিট',
+                                '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.black87,
@@ -244,7 +241,7 @@ class Post extends StatelessWidget {
                                     ),
                                     TextSpan(
                                       text:
-                                          '${postController.numberToBangla(data.mainPrice)} ',
+                                          '${postController.numberToBangla(mainPrice)} ',
                                       style: const TextStyle(
                                         height: 0.9,
                                         fontSize: 30,
@@ -265,7 +262,7 @@ class Post extends StatelessWidget {
                                   ),
                                   const VerticalDivider(width: 4),
                                   Text(
-                                    '৳${postController.numberToBangla(data.discountPrice)}',
+                                    '৳${postController.numberToBangla(discountPrice)}',
                                     style: const TextStyle(
                                       fontSize: 15,
                                       color: Colors.black54,
@@ -281,7 +278,7 @@ class Post extends StatelessWidget {
                                   ),
                                   const VerticalDivider(width: 4),
                                   Text(
-                                    '${postController.numberToBangla(data.duration)} দিন',
+                                    '${postController.numberToBangla(duration)} দিন',
                                     style: const TextStyle(
                                       fontSize: 15,
                                       color: Colors.black54,
@@ -304,7 +301,7 @@ class Post extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    '${data.offerLocation} ',
+                                    '$offerLocation ',
                                     style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors.black38,
@@ -364,8 +361,7 @@ class Post extends StatelessWidget {
                                     width: 40,
                                     height: 40,
                                     child: SvgPicture.asset(
-                                      postController
-                                          .getOperatorIcon(data.operatorType),
+                                      postController.getOperatorIcon(r),
                                     ),
                                   ),
                                 ),
@@ -381,7 +377,7 @@ class Post extends StatelessWidget {
                                   const VerticalDivider(
                                       color: Colors.transparent),
                                   Text(
-                                    '${postController.numberToBangla(int.parse(data.gb))} জিবি ${postController.numberToBangla(int.parse(data.minute))} মিনিট',
+                                    '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.black87,
@@ -402,7 +398,7 @@ class Post extends StatelessWidget {
                                         ),
                                         TextSpan(
                                           text:
-                                              '${postController.numberToBangla(data.mainPrice)} ',
+                                              '${postController.numberToBangla(mainPrice)} ',
                                           style: const TextStyle(
                                             height: 0.9,
                                             fontSize: 30,
@@ -424,7 +420,7 @@ class Post extends StatelessWidget {
                                       ),
                                       const VerticalDivider(width: 4),
                                       Text(
-                                        '৳${postController.numberToBangla(data.discountPrice)}',
+                                        '৳${postController.numberToBangla(discountPrice)}',
                                         style: const TextStyle(
                                           fontSize: 15,
                                           color: Colors.black54,
@@ -441,7 +437,7 @@ class Post extends StatelessWidget {
                                       ),
                                       const VerticalDivider(width: 4),
                                       Text(
-                                        '${postController.numberToBangla(data.duration)} দিন',
+                                        '${postController.numberToBangla(duration)} দিন',
                                         style: const TextStyle(
                                           fontSize: 15,
                                           color: Colors.black54,
@@ -464,7 +460,7 @@ class Post extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        '${data.offerLocation}',
+                                        offerLocation,
                                         style: const TextStyle(
                                           fontSize: 10,
                                           color: Colors.black38,
@@ -498,7 +494,7 @@ class Post extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Text(
-                              'Number : ${data.number}',
+                              'Number : ${0134567890}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black.withOpacity(0.7),

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/postcontroller.dart';
-import 'package:netplus/view/orderpage.dart';
+import 'package:netplus/data/offer.dart';
+import 'package:netplus/view/neworder.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class ImageSlideTolet extends StatefulWidget {
@@ -26,19 +27,11 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
   int _currentPage = 0;
   late Timer _timer;
 
-  Future getBannerAds() async {
-    if (postController.fatchOneTime.value) {
-      await postController.bannerApi();
-    }
-    // await postController.bannerApi();
-  }
-
   @override
   void initState() {
-    getBannerAds();
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
-      if (_currentPage < postController.banneradsList.length) {
+      if (_currentPage < 5) {
         _currentPage++;
       } else {
         _currentPage = 0;
@@ -57,216 +50,197 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
   void dispose() {
     super.dispose();
     _timer.cancel();
-    postController.banneradsList.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Container(
-        height: widget.hight,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: postController.bannerLoding.value
-              ? Colors.white
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: postController.bannerLoding.value
-            ? const Center(child: CircularProgressIndicator())
-            : Stack(
-                children: [
-                  PageView.builder(
-                    controller: pageController,
-                    itemCount: postController.banneradsList.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () async {
-                          // final Uri url =
-                          //     Uri.parse(bannerController.banneradsList[index].url);
+    return Container(
+      height: widget.hight,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: postController.bannerLoding.value
+            ? Colors.white
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: pageController,
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () async {
+                  // final Uri url =
+                  //     Uri.parse(bannerController.banneradsList[index].url);
 
-                          // if (!await launchUrl(
-                          //   url,
-                          //   mode: LaunchMode.externalApplication,
-                          // )) {
-                          //   throw Exception('Could not launch $url');
-                          // }
-                          Get.bottomSheet(
-                            Order(
-                              data: postController.banneradsList[index],
-                            ),
-                            elevation: 20.0,
-                            enableDrag: true,
-                            backgroundColor: Colors.white,
-                            isScrollControlled: true,
-                            ignoreSafeArea: true,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.0),
-                                topRight: Radius.circular(20.0),
-                              ),
-                            ),
-                            enterBottomSheetDuration:
-                                const Duration(milliseconds: 170),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                // ignore: prefer_const_constructors
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: const [
-                                    Colors.greenAccent,
-                                    Colors.white,
-                                  ],
+                  // if (!await launchUrl(
+                  //   url,
+                  //   mode: LaunchMode.externalApplication,
+                  // )) {
+                  //   throw Exception('Could not launch $url');
+                  // }
+                  Get.bottomSheet(
+                    const Order(),
+                    elevation: 20.0,
+                    enableDrag: true,
+                    backgroundColor: Colors.white,
+                    isScrollControlled: true,
+                    ignoreSafeArea: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
+                      ),
+                    ),
+                    enterBottomSheetDuration: const Duration(milliseconds: 170),
+                  );
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        // ignore: prefer_const_constructors
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: const [
+                            Colors.greenAccent,
+                            Colors.white,
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: Colors.transparent,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: SvgPicture.asset(
+                                  postController.getOperatorIcon(1),
                                 ),
                               ),
                             ),
-                            Container(
-                              height: 200,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: Colors.transparent,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Center(
-                                      child: SizedBox(
-                                        height: 100,
-                                        width: 100,
-                                        child: SvgPicture.asset(
-                                          postController.getOperatorIcon(
-                                            postController.banneradsList[index]
-                                                .operatorType,
-                                          ),
-                                        ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              // crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      // crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Column(
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text.rich(
+                                        TextSpan(
                                           children: [
-                                            Text(
-                                              '${postController.numberToBangla(int.parse(postController.banneradsList[index].gb))} জিবি ${postController.numberToBangla(int.parse(postController.banneradsList[index].minute))} মিনিট',
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.black87,
+                                            const TextSpan(
+                                              text: '৳',
+                                              style: TextStyle(
+                                                fontSize: 30,
+                                                height: 0.9,
+                                                color: Color(0xffF0632E),
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Align(
-                                              alignment: Alignment.center,
-                                              child: Text.rich(
-                                                TextSpan(
-                                                  children: [
-                                                    const TextSpan(
-                                                      text: '৳',
-                                                      style: TextStyle(
-                                                        fontSize: 30,
-                                                        height: 0.9,
-                                                        color:
-                                                            Color(0xffF0632E),
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    TextSpan(
-                                                      text:
-                                                          '${postController.numberToBangla(postController.banneradsList[index].mainPrice)} ',
-                                                      style: const TextStyle(
-                                                        fontSize: 45,
-                                                        height: 0.9,
-                                                        color:
-                                                            Color(0xffF0632E),
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                            TextSpan(
+                                              text:
+                                                  '${postController.numberToBangla(mainPrice)} ',
+                                              style: const TextStyle(
+                                                fontSize: 45,
+                                                height: 0.9,
+                                                color: Color(0xffF0632E),
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        Align(
-                                          alignment: Alignment.topRight,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                '${postController.numberToBangla(postController.banneradsList[index].duration)} দিন |${postController.banneradsList[index].location} ',
-                                                style: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black45,
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 35,
-                                                width: Get.width / 3.2,
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xffFFAB1C),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          1000),
-                                                ),
-                                                child: const Center(
-                                                  child: Text(
-                                                    'Buy Now',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        '${postController.numberToBangla(duration)} দিন |$offerLocation ',
+                                        style: const TextStyle(
+                                          fontSize: 5,
+                                          color: Colors.black45,
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 35,
+                                        width: Get.width / 3.2,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xffFFAB1C),
+                                          borderRadius:
+                                              BorderRadius.circular(500),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            'Buy Now',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                    onPageChanged: (index) {},
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: SmoothPageIndicator(
-                        controller: pageController,
-                        count: postController.banneradsList.length,
-                        effect: const ExpandingDotsEffect(
-                          dotWidth: 7.5,
-                          dotHeight: 7.5,
-                          spacing: 10,
-                          dotColor: Colors.black12,
-                          activeDotColor: Colors.white,
-                        ),
-                        onDotClicked: (index) {},
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              );
+            },
+            onPageChanged: (index) {},
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: SmoothPageIndicator(
+                controller: pageController,
+                count: 5,
+                effect: const ExpandingDotsEffect(
+                  dotWidth: 7.5,
+                  dotHeight: 7.5,
+                  spacing: 5,
+                  dotColor: Colors.black12,
+                  activeDotColor: Colors.white,
+                ),
+                onDotClicked: (index) {},
               ),
+            ),
+          ),
+        ],
       ),
     );
   }
