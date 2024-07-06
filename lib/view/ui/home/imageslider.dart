@@ -3,24 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/postcontroller.dart';
-import 'package:netplus/data/offer.dart';
-import 'package:netplus/view/neworder.dart';
+import 'package:netplus/model/receive.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class ImageSlideTolet extends StatefulWidget {
-  final double topPadding;
+class ImageSlide extends StatefulWidget {
   final double hight;
-  const ImageSlideTolet({
-    this.topPadding = 0,
+  final List<OfferModel> data;
+  const ImageSlide({
     Key? key,
     required this.hight,
+    required this.data,
   }) : super(key: key);
 
   @override
-  State<ImageSlideTolet> createState() => _ImageSlideToletState();
+  State<ImageSlide> createState() => _ImageSlideState();
 }
 
-class _ImageSlideToletState extends State<ImageSlideTolet> {
+class _ImageSlideState extends State<ImageSlide> {
   final PageController pageController = PageController(initialPage: 0);
   final PostController postController = Get.put(PostController());
 
@@ -29,9 +28,10 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
 
   @override
   void initState() {
+    print(widget.data.length);
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
-      if (_currentPage < 5) {
+      if (_currentPage < widget.data.length) {
         _currentPage++;
       } else {
         _currentPage = 0;
@@ -67,7 +67,7 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
         children: [
           PageView.builder(
             controller: pageController,
-            itemCount: 5,
+            itemCount: widget.data.length,
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () async {
@@ -80,21 +80,21 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
                   // )) {
                   //   throw Exception('Could not launch $url');
                   // }
-                  Get.bottomSheet(
-                    const Order(),
-                    elevation: 20.0,
-                    enableDrag: true,
-                    backgroundColor: Colors.white,
-                    isScrollControlled: true,
-                    ignoreSafeArea: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.0),
-                        topRight: Radius.circular(20.0),
-                      ),
-                    ),
-                    enterBottomSheetDuration: const Duration(milliseconds: 170),
-                  );
+                  // Get.bottomSheet(
+                  //   NewOrderPopUp(data: widget.data[index]),
+                  //   elevation: 20.0,
+                  //   enableDrag: true,
+                  //   backgroundColor: Colors.white,
+                  //   isScrollControlled: true,
+                  //   ignoreSafeArea: true,
+                  //   shape: const RoundedRectangleBorder(
+                  //     borderRadius: BorderRadius.only(
+                  //       topLeft: Radius.circular(20.0),
+                  //       topRight: Radius.circular(20.0),
+                  //     ),
+                  //   ),
+                  //   enterBottomSheetDuration: const Duration(milliseconds: 170),
+                  // );
                 },
                 child: Stack(
                   children: [
@@ -141,7 +141,7 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
                                 Column(
                                   children: [
                                     Text(
-                                      '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
+                                      '${postController.numberToBangla(widget.data[index].gb)} জিবি ${postController.numberToBangla(widget.data[index].minute)} মিনিট',
                                       style: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.black87,
@@ -163,7 +163,7 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
                                             ),
                                             TextSpan(
                                               text:
-                                                  '${postController.numberToBangla(mainPrice)} ',
+                                                  '${postController.numberToBangla(widget.data[index].mainPrice)} ',
                                               style: const TextStyle(
                                                 fontSize: 45,
                                                 height: 0.9,
@@ -182,7 +182,7 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
                                   child: Column(
                                     children: [
                                       Text(
-                                        '${postController.numberToBangla(duration)} দিন |$offerLocation ',
+                                        '${postController.numberToBangla(widget.data[index].duration)} দিন |${widget.data[index].offerLocation} ',
                                         style: const TextStyle(
                                           fontSize: 5,
                                           color: Colors.black45,
@@ -228,7 +228,7 @@ class _ImageSlideToletState extends State<ImageSlideTolet> {
               padding: const EdgeInsets.only(bottom: 20),
               child: SmoothPageIndicator(
                 controller: pageController,
-                count: 5,
+                count: widget.data.length,
                 effect: const ExpandingDotsEffect(
                   dotWidth: 7.5,
                   dotHeight: 7.5,

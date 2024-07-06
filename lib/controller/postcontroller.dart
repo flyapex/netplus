@@ -4,8 +4,26 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:netplus/api/api.dart';
 import 'package:netplus/controller/usercontroller.dart';
+import 'package:netplus/model/receive.dart';
 
 class PostController extends GetxController {
+  RxList<OfferModel> offerList = <OfferModel>[].obs;
+  var offerListLoading = true.obs;
+  Future myOfferApi() async {
+    offerListLoading(true);
+    try {
+      var response = await ApiService.getAllOffersPost();
+      if (response != null) {
+        offerList.addAll(response);
+        // print(offerList.length);
+        offerListLoading(false);
+      }
+    } finally {
+      offerListLoading(false);
+    }
+  }
+//*---------------------------------------------------------------------------
+
   UserController userController = Get.put(UserController());
   final refreshkey = GlobalKey<CustomRefreshIndicatorState>();
   // final NavbarController navbarController = Get.find();
@@ -55,11 +73,11 @@ class PostController extends GetxController {
     try {
       banneradsList.clear();
       bannerLoding(true);
-      var response = await ApiService.banner();
-      if (response != null) {
-        banneradsList.addAll(response);
-        bannerLoding(false);
-      }
+      // var response = await ApiService.banner();
+      // if (response != null) {
+      //   banneradsList.addAll(response);
+      //   bannerLoding(false);
+      // }
     } finally {
       fatchOneTime(false);
     }
@@ -77,17 +95,17 @@ class PostController extends GetxController {
   getOffer(int operatorType) async {
     // offerLoading(true);
     try {
-      var response = await ApiService.getOffer(operatorType);
-      var offerList = offerLists[operatorType];
+      // var response = await ApiService.getOffer(operatorType);
+      // var offerList = offerLists[operatorType];
 
-      if (response != null) {
-        // offerList?.clear();
-        offerList?.addAll(response);
+      // if (response != null) {
+      //   // offerList?.clear();
+      //   offerList?.addAll(response);
 
-        if (response.isEmpty) {
-          return offerList;
-        }
-      }
+      //   if (response.isEmpty) {
+      //     return offerList;
+      //   }
+      // }
     } finally {
       // offerLoading(false);
     }
@@ -98,14 +116,14 @@ class PostController extends GetxController {
   }
 
   newOrder(offerid) async {
-    // bool response = await ApiService.newOrder(
-    //   userController.getUserID(),
-    //   offerid,
-    //   number.text,
-    //   'Khulna',
-    // );
-    bool response = true;
+    bool response = await ApiService.newOrder(
+      offerid,
+      number.text,
+    );
+    print(response);
+    // bool response = true;
     // if (response) {}
+    Get.back();
     Get.dialog(
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -128,7 +146,6 @@ class PostController extends GetxController {
                       Text(
                         response
                             ? 'আপনার অফার রিকোয়েস্টটি আমরা পেয়েছি!'
-                            // ignore: dead_code
                             : 'User not found',
                         textAlign: TextAlign.center,
                       ),
@@ -136,7 +153,6 @@ class PostController extends GetxController {
                       Text(
                         response
                             ? '১০ মিনিট আমাদের সাথে থাকার জন্য ধন্যবাদ🤝'
-                            // ignore: dead_code
                             : 'Contact Support 24/7',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
@@ -149,14 +165,12 @@ class PostController extends GetxController {
                           child: Lottie.asset(
                             response
                                 ? 'assets/lottie/done.json'
-                                // ignore: dead_code
                                 : 'assets/lottie/404.json',
                             repeat: false,
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
-                      //Buttons
                       Row(
                         children: [
                           Expanded(
@@ -176,13 +190,11 @@ class PostController extends GetxController {
                                   Get.back();
                                   // navbarController.selectedIndex = 2;
                                   // navbarController.pagecontroller.jumpToPage(2);
-                                  // ignore: dead_code
                                 } else {
                                   //fb page
                                 }
                               },
                               child: Text(
-                                // ignore: dead_code
                                 response ? 'Okay' : 'Okay🤝',
                               ),
                             ),
@@ -200,20 +212,20 @@ class PostController extends GetxController {
     );
   }
 
-  var historyList = [].obs;
+  RxList<OrderRec> historyList = <OrderRec>[].obs;
   var historyLoding = true.obs;
-  var fatchOneTimehistory = true.obs;
+
   Future getHistory() async {
+    historyLoding.value = true;
     try {
       historyLoding(true);
-      var response =
-          await ApiService.getOrderHistory(userController.getUserID());
+      var response = await ApiService.getOrderHistory();
       if (response != null) {
         historyList.addAll(response);
         historyLoding(false);
       }
     } finally {
-      fatchOneTimehistory(false);
+      historyLoding(false);
     }
   }
 }

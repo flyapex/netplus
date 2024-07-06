@@ -9,6 +9,11 @@ class DBController extends GetxController {
 
   getUserID() => _box.read(loginKey) ?? false;
   saveUserId(int value) => _box.write(loginKey, value);
+
+  final token = 'token';
+
+  String getToken() => _box.read(token) ?? '';
+  saveToken(String value) => _box.write(token, value);
 }
 
 class GoogleSignInApi {

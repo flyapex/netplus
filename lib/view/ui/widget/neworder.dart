@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:netplus/controller/navcontroller.dart';
 import 'package:netplus/controller/postcontroller.dart';
-import 'package:netplus/data/offer.dart';
-import 'widget/textinput.dart';
+import 'package:netplus/model/receive.dart';
+import 'textinput.dart';
 
-class Order extends StatefulWidget {
-  const Order({super.key});
+class NewOrderPopUp extends StatefulWidget {
+  final OfferModel data;
+  const NewOrderPopUp({super.key, required this.data});
 
   @override
-  State<Order> createState() => _OrderState();
+  State<NewOrderPopUp> createState() => _NewOrderPopUpState();
 }
 
-class _OrderState extends State<Order> {
+class _NewOrderPopUpState extends State<NewOrderPopUp> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -39,8 +41,10 @@ class _OrderState extends State<Order> {
             ),
           ),
           const SizedBox(height: 20),
-          const Expanded(
-            child: OrderPage(),
+          Expanded(
+            child: NewOrderPopUpCart(
+              data: widget.data,
+            ),
           ),
         ],
       ),
@@ -48,15 +52,17 @@ class _OrderState extends State<Order> {
   }
 }
 
-class OrderPage extends StatelessWidget {
-  // final OfferModel
-  const OrderPage({
+class NewOrderPopUpCart extends StatelessWidget {
+  final OfferModel data;
+  const NewOrderPopUpCart({
     super.key,
+    required this.data,
   });
 
   @override
   Widget build(BuildContext context) {
     PostController postController = Get.put(PostController());
+    NavbarController navbarController = Get.find();
 
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
@@ -92,7 +98,8 @@ class OrderPage extends StatelessWidget {
                           width: 40,
                           height: 40,
                           child: SvgPicture.asset(
-                            postController.getOperatorIcon(1),
+                            postController
+                                .getOperatorIcon(data.offerModelOperator),
                           ),
                         ),
                       ),
@@ -102,7 +109,7 @@ class OrderPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${postController.numberToBangla(gb)} জিবি ${postController.numberToBangla(minute)} মিনিট',
+                          '${postController.numberToBangla(data.gb)} জিবি ${postController.numberToBangla(data.minute)} মিনিট',
                           style: const TextStyle(
                             fontSize: 18,
                             color: Color(0xffF0632E),
@@ -113,7 +120,7 @@ class OrderPage extends StatelessWidget {
                             children: [
                               TextSpan(
                                 text:
-                                    '${postController.numberToBangla(mainPrice)} ',
+                                    '${postController.numberToBangla(data.mainPrice)} ',
                                 style: const TextStyle(
                                   height: 0.9,
                                   fontSize: 30,
@@ -134,7 +141,7 @@ class OrderPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '৳${postController.numberToBangla(discountPrice)}',
+                          '৳${postController.numberToBangla(data.discountPrice)}',
                           style: const TextStyle(
                             fontSize: 15,
                             color: Colors.black54,
@@ -192,8 +199,19 @@ class OrderPage extends StatelessWidget {
                     height: Get.height / 17,
                     child: FloatingActionButton.extended(
                       onPressed: () async {
-                        Get.back();
-                        await postController.newOrder(offerId);
+                        // Timer(const Duration(milliseconds: 500), () async {
+                        //   Get.back();
+                        // });
+                        // Timer(const Duration(milliseconds: 500), () async {
+                        //   await postController.newOrder(data.offerId);
+                        // });
+                        await postController.newOrder(data.offerId);
+                        postController.refreshkey.currentState!.refresh(
+                          draggingDuration: const Duration(milliseconds: 350),
+                          draggingCurve: Curves.easeOutBack,
+                        );
+                        navbarController.selectedIndex = 2;
+                        navbarController.pagecontroller.jumpToPage(2);
                       },
                       label: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

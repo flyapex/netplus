@@ -4,7 +4,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:netplus/controller/navcontroller.dart';
 import 'package:netplus/controller/usercontroller.dart';
-import 'package:netplus/view/widget/notification.dart';
+import 'package:netplus/view/ui/widget/notification.dart';
 
 class ReusableAppBar {
   static getAppBar(context) {
@@ -16,9 +16,19 @@ class ReusableAppBar {
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.dark,
       ),
+
+      // backgroundColor: Colors.white,
+      // shadowColor: Colors.white,
+      // foregroundColor: Colors.white,
       elevation: 1,
-      backgroundColor: Colors.white,
-      shadowColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      bottom: PreferredSize(
+        preferredSize: const Size(double.infinity, 0.1),
+        child: Container(
+          color: Colors.blueGrey.withOpacity(0.1),
+          height: 0.4,
+        ),
+      ),
       centerTitle: true,
       title: SizedBox(
         height: 26,
@@ -40,7 +50,7 @@ class ReusableAppBar {
                 },
                 icon: CircleAvatar(
                   // backgroundImage: NetworkImage(),
-                  backgroundImage: NetworkImage(userController.image.value),
+                  backgroundImage: NetworkImage(userController.imageUrl.value),
                 ),
               ),
               const Column(

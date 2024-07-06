@@ -17,10 +17,3 @@ class NavbarController extends GetxController {
     scaffoldKey.currentState?.openDrawer();
   }
 }
-
-class IconModel {
-  final String icon;
-  final String title;
-
-  const IconModel({required this.icon, required this.title});
-}

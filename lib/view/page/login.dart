@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
+import 'package:netplus/controller/db_controller.dart';
 import 'package:netplus/controller/usercontroller.dart';
-import 'package:netplus/main.dart';
+import 'package:netplus/model/send.dart';
 import 'package:video_player/video_player.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<Login> createState() => _LoginState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginState extends State<Login> {
   getStatus(status) {
     if (status == 1) {
       return Container(
@@ -117,9 +118,24 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () async {
-                  Get.to(const HomeView());
-                  // var user = await GoogleSignInApi.login();
-                  // print(user!.email);
+                  var user = await GoogleSignInApi.login();
+                  print(user!.email);
+                  int userStatus = await userController.userLogin(
+                    Newuser(
+                      name: user.displayName!,
+                      email: user.email,
+                      imageUrl: user.photoUrl ?? "",
+                      fcm: "",
+                    ),
+                  );
+
+                  print(userStatus);
+
+                  // if (userStatus == 0) {
+                  //   Get.offAll(() => const BannedPage());
+                  // } else if (userStatus == 1) {
+                  //   Get.offAll(() => const HomeView());
+                  // }
                 },
                 child: const SocialIcons(
                   icon: 'assets/icons/google.svg',

@@ -50,7 +50,7 @@ class _CustomeDrawerState extends State<CustomeDrawer>
               accountName: Text(userController.name.value),
               // "${userController.name.value} (${dbController.getUserID()})"),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(userController.image.value),
+                backgroundImage: NetworkImage(userController.imageUrl.value),
               ),
               accountEmail: Text(
                 userController.email.value,
